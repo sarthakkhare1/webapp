@@ -2,17 +2,25 @@ const User = require('../models/user');
 
 module.exports.profile = function(req,res){
     return res.render('user_profile',{
-        title: 'User profile'
+        title: 'User profile',
+        user : req.user
     });
 }
 //render signup page
 module.exports.sighUp = function(req,res){
+    if(req.isAuthenticated()){
+        return  res.redirect('/users/profile');
+     }
     return res.render('user_signup',{
         title : "intsocial | signup"
+
     });
 }
 
 module.exports.sighIn = function(req,res){
+    if(req.isAuthenticated()){
+       return  res.redirect('/users/profile');
+    }
     return res.render('user_signin',{
         title : "intsocial | signin"
     });
@@ -46,5 +54,10 @@ module.exports.create = function(req,res){
 
 module.exports.createSession = function(req,res){
     console.log('verified');
-    return res.redirect('/');
+    return res.redirect('/users/profile');
+}
+
+module.exports.destroySession = function(req,res){
+    req.logout();
+    return res.redirect('/users/sign-in');
 }
