@@ -10,9 +10,10 @@ const db = require('./config/mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const passportLocal = require('./config/passport-local-strategy');
-
+const customMware = require('./config/middleware');
 const MongoStore = require('connect-mongo')(session);
 const sassMiddleware = require('node-sass-middleware');
+const flash = require('connect-flash');
 
 app.use(sassMiddleware({
     src : './assets/sass',
@@ -22,11 +23,13 @@ app.use(sassMiddleware({
     prefix : '/css'
 }));
 
+
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(express.static('./assets'));
+app.use('/uploads',express.static(__dirname + '/uploads'));
 
 app.use(expressLayouts);
 // extract style and scripts from sub pages into the layout
@@ -65,6 +68,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthenticatedUser);
+app.use(flash());
+app.use(customMware.setFlash);
 // use express router
 app.use('/', require('./routes'));
 
